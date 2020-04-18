@@ -30,14 +30,14 @@ pipeline {
             }
         }
 
-        // stage('Destroy infrastructure') {
-        //     steps {
-        //         dir('dev') {
-        //             sh "terraform destroy -auto-approve \
-        //             -var AWS_ACCES_KEY=$AWS_ACCES_KEY_ID \
-        //             -var AWS_SECRET_ACCESS=$AWS_SECRET_ACCESS_KEY"
-        //         }
-        //     }
-        // }
+        stage('Destroy infrastructure') {
+            steps {
+                dir('dev') {
+                    sh "terraform destroy -auto-approve \
+                    -var AWS_ACCES_KEY=$AWS_ACCES_KEY_ID \
+                    -var AWS_SECRET_ACCESS=$AWS_SECRET_ACCESS_KEY"
+                }
+            }
+        }
     }
 }
