@@ -8,7 +8,7 @@ provider "aws" {
 }
 
 resource "aws_instance" "nginx" {
-  ami           = "ami-0cb96ac3c99677647"
+  ami           = "ami-08d8cabe75ef22b4e"
   instance_type = "t2.micro"
   vpc_security_group_ids = [aws_security_group.nginx_aws_sg.id]
 
