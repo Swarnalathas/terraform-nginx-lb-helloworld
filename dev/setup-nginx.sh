@@ -8,8 +8,8 @@ events {
 }
  http {
     upstream myproject {
-    server aws_instance.server_A weight=1;
-    server aws_instance.server_B weight=1;   
+    server ec2-3-8-122-233.eu-west-2.compute.amazonaws.com weight=1;
+    server ec2-35-177-216-167.eu-west-2.compute.amazonaws.com weight=1;   
   }
 
   server {
