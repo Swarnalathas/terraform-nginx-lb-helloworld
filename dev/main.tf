@@ -48,7 +48,7 @@ resource "aws_security_group" "nginx_aws_sg" {
 data "aws_ami" "nginx_image" {
   executable_users = ["self"]
   most_recent      = true
-  name_regex       = "^packer"
+  //name_regex       = "^packer"
   owners           = ["self"]
 
   filter {
