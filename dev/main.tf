@@ -33,7 +33,7 @@ resource "aws_security_group" "nginx_aws_sg" {
 }
 
 resource "aws_instance" "nginx" {
-  ami           = ami-0f79f153f68efa717
+  ami           = "ami-0f79f153f68efa717"
   instance_type = "t2.micro"
   vpc_security_group_ids = [aws_security_group.nginx_aws_sg.id]
   
