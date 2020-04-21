@@ -1,37 +1,14 @@
 variable "AWS_ACCES_KEY" {}
 variable "AWS_SECRET_ACCESS" {}
+variable "NGINX_AMI" {}
+  
+
 
 provider "aws" {
   region = "eu-west-2"
   access_key = var.AWS_ACCES_KEY
   secret_key = var.AWS_SECRET_ACCESS
-}
-
-resource "aws_instance" "nginx" {
-  ami           = "ami-0e4d8c9f39a0e188c"
-  instance_type = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.nginx_aws_sg.id]
-
-  tags = {
-    Name = "Nginx-Load-Balancer"
-  }
-  Events   
-    {   
-      worker_connections 768;   
-    } 
-  http {
-    upstream myproject {
-    server aws_instance.server_A.ingress weight=1;
-    server aws_instance.server_B.ingress weight=1;   
-  }
-
-  server {
-    listen 80;
-    server_name www.domain.com;
-    location / {
-      proxy_pass http://myproject;
-    }
-  }
+  nginx_image_id = var.NGINX_AMI
 }
 
 resource "aws_security_group" "nginx_aws_sg" {
@@ -43,75 +20,24 @@ resource "aws_security_group" "nginx_aws_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-}
-
-# data "aws_ami" "nginx_image" {
-#   executable_users = ["self"]
-#   most_recent      = true
-#   //name_regex       = "^packer"
-#   owners           = ["self"]
-
-#   filter {
-#     name   = "name"
-#     values = ["packer-nginx-*"]
-#   }
-
-#   filter {
-#     name   = "root-device-type"
-#     values = ["ebs"]
-#   }
-
-#   filter {
-#     name   = "virtualization-type"
-#     values = ["hvm"]
-#   }
-# }
-
-resource "aws_instance" "server_A" {
-  ami           = "ami-006a0174c6c25ac06"
-  instance_type = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.swsel_asg.id]
-  user_data = <<-EOF
-              #!/bin/bash
-              echo "Hello, World!! Server A" > index.html
-              nohup busybox httpd -f -p 8080 &
-              EOF
-  tags = {
-    Name = "server_A"
-  }
-  
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-resource "aws_instance" "server_B" {
-  ami           = "ami-006a0174c6c25ac06"
-  instance_type = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.swsel_asg.id]
-  user_data = <<-EOF
-              #!/bin/bash
-              echo "Hello, World!! Server B" > index.html
-              nohup busybox httpd -f -p 8080 &
-              EOF
-  tags = {
-    Name = "server_B"
-  }
-  
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "aws_security_group" "swsel_asg" {
-  name = "swsel-terraform-asg-instance"
-
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Name = "nginx_aws_sg-instance"
+  }
 }
 
+resource "aws_instance" "nginx" {
+  ami           = nginx_image_id
+  instance_type = "t2.micro"
+  vpc_security_group_ids = [aws_security_group.nginx_aws_sg.id]
 
-
+  tags = {
+    Name = "Nginx-Load-Balancer"
+  } 
+}
