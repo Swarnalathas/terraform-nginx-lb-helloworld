@@ -8,7 +8,7 @@ provider "aws" {
 }
 
 resource "aws_instance" "nginx" {
-  ami           = "aws_ami.nginx_image.id"
+  ami           = "ami-0e4d8c9f39a0e188c"
   instance_type = "t2.micro"
   vpc_security_group_ids = [aws_security_group.nginx_aws_sg.id]
 
@@ -45,27 +45,27 @@ resource "aws_security_group" "nginx_aws_sg" {
   }
 }
 
-data "aws_ami" "nginx_image" {
-  executable_users = ["self"]
-  most_recent      = true
-  //name_regex       = "^packer"
-  owners           = ["self"]
+# data "aws_ami" "nginx_image" {
+#   executable_users = ["self"]
+#   most_recent      = true
+#   //name_regex       = "^packer"
+#   owners           = ["self"]
 
-  filter {
-    name   = "name"
-    values = ["packer-nginx-*"]
-  }
+#   filter {
+#     name   = "name"
+#     values = ["packer-nginx-*"]
+#   }
 
-  filter {
-    name   = "root-device-type"
-    values = ["ebs"]
-  }
+#   filter {
+#     name   = "root-device-type"
+#     values = ["ebs"]
+#   }
 
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-}
+#   filter {
+#     name   = "virtualization-type"
+#     values = ["hvm"]
+#   }
+# }
 
 # resource "aws_instance" "server_A" {
 #   ami           = "ami-006a0174c6c25ac06"
