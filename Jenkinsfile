@@ -18,10 +18,13 @@ pipeline {
         }
         stage('Build Nginx Image') {
             steps {
+                dir('dev'){
+                
                 sh "packer build \
                      -var aws_access_key=$AWS_ACCES_KEY_ID \
                      -var aws_secret_key=$AWS_SECRET_ACCESS_KEY \
                      packer-nginx.json"
+            }
             }
         }
         stage('Set Terraform Path') {
