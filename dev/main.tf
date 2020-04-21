@@ -15,23 +15,23 @@ resource "aws_instance" "nginx" {
   tags = {
     Name = "Nginx-Load-Balancer"
   }
-  # Events   
-  #   {   
-  #     worker_connections 768;   
-  #   } 
-  # http {
-  #   upstream myproject {
-  #   server 127.0.0.1:8000 weight=1;
-  #   server 127.0.0.1:8001 weight=1;   
-  # }
+  Events   
+    {   
+      worker_connections 768;   
+    } 
+  http {
+    upstream myproject {
+    server aws_instance.server_A.ingress weight=1;
+    server aws_instance.server_B.ingress weight=1;   
+  }
 
-  # server {
-  #   listen 80;
-  #   server_name www.domain.com;
-  #   location / {
-  #     proxy_pass http://myproject;
-  #   }
-  # }
+  server {
+    listen 80;
+    server_name www.domain.com;
+    location / {
+      proxy_pass http://myproject;
+    }
+  }
 }
 
 resource "aws_security_group" "nginx_aws_sg" {
@@ -67,51 +67,51 @@ resource "aws_security_group" "nginx_aws_sg" {
 #   }
 # }
 
-# resource "aws_instance" "server_A" {
-#   ami           = "ami-006a0174c6c25ac06"
-#   instance_type = "t2.micro"
-#   vpc_security_group_ids = [aws_security_group.swsel_asg.id]
-#   user_data = <<-EOF
-#               #!/bin/bash
-#               echo "Hello, World!! Server A" > index.html
-#               nohup busybox httpd -f -p 8080 &
-#               EOF
-#   tags = {
-#     Name = "server_A"
-#   }
+resource "aws_instance" "server_A" {
+  ami           = "ami-006a0174c6c25ac06"
+  instance_type = "t2.micro"
+  vpc_security_group_ids = [aws_security_group.swsel_asg.id]
+  user_data = <<-EOF
+              #!/bin/bash
+              echo "Hello, World!! Server A" > index.html
+              nohup busybox httpd -f -p 8080 &
+              EOF
+  tags = {
+    Name = "server_A"
+  }
   
-#   lifecycle {
-#     create_before_destroy = true
-#   }
-# }
-# resource "aws_instance" "server_B" {
-#   ami           = "ami-006a0174c6c25ac06"
-#   instance_type = "t2.micro"
-#   vpc_security_group_ids = [aws_security_group.swsel_asg.id]
-#   user_data = <<-EOF
-#               #!/bin/bash
-#               echo "Hello, World!! Server B" > index.html
-#               nohup busybox httpd -f -p 8080 &
-#               EOF
-#   tags = {
-#     Name = "server_B"
-#   }
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+resource "aws_instance" "server_B" {
+  ami           = "ami-006a0174c6c25ac06"
+  instance_type = "t2.micro"
+  vpc_security_group_ids = [aws_security_group.swsel_asg.id]
+  user_data = <<-EOF
+              #!/bin/bash
+              echo "Hello, World!! Server B" > index.html
+              nohup busybox httpd -f -p 8080 &
+              EOF
+  tags = {
+    Name = "server_B"
+  }
   
-#   lifecycle {
-#     create_before_destroy = true
-#   }
-# }
+  lifecycle {
+    create_before_destroy = true
+  }
+}
 
-# resource "aws_security_group" "swsel_asg" {
-#   name = "swsel-terraform-asg-instance"
+resource "aws_security_group" "swsel_asg" {
+  name = "swsel-terraform-asg-instance"
 
-#   ingress {
-#     from_port   = 8080
-#     to_port     = 8080
-#     protocol    = "tcp"
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
-# }
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
 
 
 
