@@ -8,7 +8,7 @@ provider "aws" {
 }
 
 resource "aws_instance" "nginx" {
-  ami           = "aws_ami.id"
+  ami           = [aws_ami.nginx_image.id]
   instance_type = "t2.micro"
   vpc_security_group_ids = [aws_security_group.nginx_aws_sg.id]
 
@@ -45,15 +45,15 @@ resource "aws_security_group" "nginx_aws_sg" {
   }
 }
 
-data "aws_ami" "packer-nginx-ws" {
+data "aws_ami" "nginx_image" {
   executable_users = ["self"]
   most_recent      = true
-  name_regex       = "^myami-\\d{3}"
+  name_regex       = "packer-nginx-ws"
   owners           = ["self"]
 
   filter {
     name   = "name"
-    values = ["myami-*"]
+    values = ["packer-nginx-ws"]
   }
 
   filter {
